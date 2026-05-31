@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eBay Dropshipping Məhsul Tapıcı</title>
+<style>
+  :root{
+    --bg:#0b1120; --card:#1e293b; --card2:#273449; --card3:#334155;
+    --accent:#22c55e; --accent2:#3b82f6; --warn:#f59e0b; --danger:#ef4444;
+    --text:#e2e8f0; --muted:#94a3b8; --border:#334155;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+  body{background:var(--bg);color:var(--text);min-height:100vh;padding:20px;line-height:1.5}
+  .wrap{max-width:1100px;margin:0 auto}
+  h1{font-size:1.55rem;margin-bottom:2px}
+  .sub{color:var(--muted);margin-bottom:18px;font-size:.92rem}
+  .tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .tab{background:var(--card);border:1px solid var(--border);color:var(--muted);
+    padding:10px 18px;border-radius:10px;cursor:pointer;font-size:.95rem;transition:.15s}
+  .tab.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+  .panel{display:none} .panel.active{display:block}
+  .filters{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px}
+  .frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+  label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:5px}
+  input,select{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;
+    padding:9px 11px;color:var(--text);font-size:.95rem;outline:none}
+  input:focus,select:focus{border-color:var(--accent2)}
+  .range-val{color:var(--accent);font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+  .stat .n{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+  .stat .c{font-size:.78rem;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .prod{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+  .prod::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px}
+  .prod.good::before{background:var(--accent)}
+  .prod.mid::before{background:var(--warn)}
+  .prod.low::before{background:var(--danger)}
+  .prod h3{font-size:1.05rem;margin-bottom:4px;padding-left:6px}
+  .cat{font-size:.74rem;color:var(--muted);padding-left:6px;margin-bottom:12px}
+  .scorebadge{position:absolute;top:14px;right:14px;font-size:.72rem;font-weight:700;
+    padding:4px 10px;border-radius:20px}
+  .scorebadge.good{background:rgba(34,197,94,.18);color:var(--accent)}
+  .scorebadge.mid{background:rgba(245,158,11,.18);color:var(--warn)}
+  .scorebadge.low{background:rgba(239,68,68,.18);color:var(--danger)}
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-left:6px}
+  .m{background:var(--card2);border-radius:8px;padding:8px 10px}
+  .m .lab{font-size:.7rem;color:var(--muted)}
+  .m .v{font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
+  .v.pos{color:var(--accent)} .v.neg{color:var(--danger)}
+  .bars{padding-left:6px;margin-top:12px}
+  .bar{margin-bottom:8px}
+  .bar .t{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:3px}
+  .track{height:7px;background:var(--card2);border-radius:6px;overflow:hidden}
+  .fill{height:100%;border-radius:6px}
+  .fill.demand{background:var(--accent2)} .fill.comp{background:var(--warn)}
+  .empty{text-align:center;color:var(--muted);padding:50px;font-size:1rem}
+  .btn{background:var(--accent2);color:#fff;border:none;border-radius:9px;padding:11px 18px;
+    font-size:.95rem;cursor:pointer;transition:.15s}
+  .btn:hover{filter:brightness(1.1)}
+  .btn.green{background:var(--accent)}
+  .addform{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px}
+  .addform .frow{margin-bottom:14px}
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.calc-grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
+  .card h2{font-size:1.05rem;margin-bottom:16px}
+  .field{margin-bottom:14px}
+  .inputwrap{position:relative}
+  .inputwrap .unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem}
+  .inputwrap input{padding-right:34px}
+  .results .row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px dashed var(--border)}
+  .results .row:last-child{border-bottom:none}
+  .results .label{color:var(--muted)} .results .val{font-weight:600;font-variant-numeric:tabular-nums}
+  .big{margin-top:8px;padding:18px;border-radius:11px;text-align:center}
+  .big .num{font-size:2rem;font-weight:700} .big .cap{font-size:.83rem;opacity:.85}
+  .profit-pos{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4)}
+  .profit-neg{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4)}
+  .pos{color:var(--accent)} .neg{color:var(--danger)}
+  .note{background:var(--card2);border-left:3px solid var(--accent2);padding:12px 14px;border-radius:8px;
+    font-size:.85rem;color:var(--muted);margin-top:16px}
+  .note b{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔍 eBay Dropshipping Məhsul Tapıcı</h1>
+  <p class="sub">Qazanc potensialına görə məhsulları tap, analiz et və sırala. Yalnız "normal qazanc" verən məhsulları seç.</p>
+  <div class="tabs">
+    <div class="tab active" data-tab="finder">🔍 Məhsul Tapıcı</div>
+    <div class="tab" data-tab="add">➕ Öz məhsulunu əlavə et</div>
+    <div class="tab" data-tab="calc">▪ Kalkulyator</div>
+    <div class="tab" data-tab="api">🔌 Canlı eBay datası</div>
+  </div>
+  <div class="panel active" id="finder">
+    <div class="filters">
+      <div class="frow">
+        <div><label>🔎 Axtarış (ad / kateqoriya)</label><input id="f_search" type="text" placeholder="məs: telefon, ev, fitnes..."></div>
+        <div><label>Kateqoriya</label><select id="f_cat"><option value="">Hamısı</option></select></div>
+        <div><label>Minimum marja: <span class="range-val" id="f_margin_v">15%</span></label><input id="f_margin" type="range" min="0" max="60" value="15"></div>
+        <div><label>Maksimum rəqabət: <span class="range-val" id="f_comp_v">100</span></label><input id="f_comp" type="range" min="10" max="100" value="100"></div>
+        <div><label>Sıralama</label><select id="f_sort">
+            <option value="score">Fürsət balı (yüksək → aşağı)</option>
+            <option value="profit">Mənfəət (yüksək → aşağı)</option>
+            <option value="margin">Marja (yüksək → aşağı)</option>
+            <option value="demand">Tələbat (yüksək → aşağı)</option>
+            <option value="comp">Rəqabət (az → çox)</option>
+        </select></div>
+        <div><label>Yalnız yaxşı fürsətlər</label><select id="f_goodonly">
+            <option value="0">Hamısını göstər</option>
+            <option value="1">Yalnız "Yaxşı fürsət"</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n" id="s_count">0</div><div class="c">Tapılan məhsul</div></div>
+      <div class="stat"><div class="n pos" id="s_good">0</div><div class="c">Yaxşı fürsət</div></div>
+      <div class="stat"><div class="n" id="s_avgprofit">$0</div><div class="c">Orta mənfəət</div></div>
+      <div class="stat"><div class="n" id="s_avgmargin">0%</div><div class="c">Orta marja</div></div>
+      <div class="stat"><div class="n" id="s_best">—</div><div class="c">Ən yaxşı fürsət</div></div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" style="display:none">Bu filtrlərə uyğun məhsul tapılmadı. Filtri yumşalt.</div>
+  </div>
+  <div class="panel" id="add">
+    <div class="addform">
+      <h2 style="margin-bottom:14px">➕ Yeni məhsul əlavə et və analiz et</h2>
+      <p class="sub">Təchizatçıda tapdığın məhsulun məlumatını yaz — proqram qazanc potensialını hesablayıb siyahıya əlavə edər.</p>
+      <div class="frow">
+        <div><label>Məhsulun adı</label><input id="a_name" type="text" placeholder="məs: LED gecə lampası"></div>
+        <div><label>Kateqoriya</label><input id="a_cat" type="text" placeholder="məs: Ev"></div>
+        <div><label>Təchizatçı qiyməti ($)</label><input id="a_cost" type="number" value="8" step="0.5"></div>
+        <div><label>eBay satış qiyməti ($)</label><input id="a_sell" type="number" value="22" step="0.5"></div>
+        <div><label>Tələbat (1-100)</label><input id="a_demand" type="number" value="60" min="1" max="100"></div>
+        <div><label>Rəqabət (1-100, az yaxşıdır)</label><input id="a_comp" type="number" value="50" min="1" max="100"></div>
+      </div>
+      <button class="btn green" id="addBtn">➕ Əlavə et və analiz et</button>
+      <div class="note">💡 <b>Tələbatı</b> təxmin etmək üçün eBay-də məhsulu axtar, "Sold items" filtrini aç — son 30 gündə neçə ədəd satıldığına bax. <b>Rəqabət</b> = həmin məhsulu satan satıcıların sayı (çoxdursa bal yüksəkdir = pisdir).</div>
+    </div>
+  </div>
+  <div class="panel" id="calc">
+    <div class="calc-grid">
+      <div class="card">
+        <h2>🧾 Xərclər və qiymət</h2>
+        <div class="field"><label>Satış qiyməti</label><div class="inputwrap"><input id="c_sell" type="number" value="25" step="0.01"><span class="unit">$</span></div></div>
+        <div class="field"><label>Təchizatçı qiyməti</label><div class="inputwrap"><input id="c_cost" type="number" value="10" step="0.01"><span class="unit">$</span></div></div>
+        <div class="field"><label>eBay komissiyası (Final Value Fee)</label><div class="inputwrap"><input id="c_fvf" type="number" value="13.25" step="0.1"><span class="unit">%</span></div></div>
+        <div class="field"><label>Sabit eBay haqqı (hər sifariş)</label><div class="inputwrap"><input id="c_fixed" type="number" value="0.40" step="0.01"><span class="unit">$</span></div></div>
+        <div class="field"><label>Ödəniş / valyuta haqqı</label><div class="inputwrap"><input id="c_pay" type="number" value="2" step="0.1"><span class="unit">%</span></div></div>
+        <div class="field"><label>Çatdırılma xərci</label><div class="inputwrap"><input id="c_ship" type="number" value="0" step="0.01"><span class="unit">$</span></div></div>
+        <div class="field"><label>Reklam xərci (Promoted Listings)</label><div class="inputwrap"><input id="c_ad" type="number" value="0" step="0.1"><span class="unit">%</span></div></div>
+      </div>
+      <div class="card">
+        <h2>✓ Nəticə</h2>
+        <div class="results">
+          <div class="row"><span class="label">eBay komissiyası</span><span class="val neg" id="rc_fvf">—</span></div>
+          <div class="row"><span class="label">Sabit haqq</span><span class="val neg" id="rc_fixed">—</span></div>
+          <div class="row"><span class="label">Ödəniş haqqı</span><span class="val neg" id="rc_pay">—</span></div>
+          <div class="row"><span class="label">Reklam</span><span class="val neg" id="rc_ad">—</span></div>
+          <div class="row"><span class="label">Çatdırılma</span><span class="val neg" id="rc_ship">—</span></div>
+          <div class="row"><span class="label">Təchizatçı</span><span class="val neg" id="rc_cost">—</span></div>
+          <div class="row"><span class="label">Ümumi xərc</span><span class="val" id="rc_total">—</span></div>
+        </div>
+        <div class="big" id="rc_box"><div class="num" id="rc_profit">—</div><div class="cap">Xalis mənfəət (hər satış)</div></div>
+        <div class="results" style="margin-top:12px">
+          <div class="row"><span class="label">Mənfəət marjası</span><span class="val" id="rc_margin">—</span></div>
+          <div class="row"><span class="label">ROI</span><span class="val" id="rc_roi">—</span></div>
+          <div class="row"><span class="label">Zərərsizlik qiyməti</span><span class="val" id="rc_be">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="api">
+    <div class="card">
+      <h2>🔌 Canlı eBay datası necə qoşulur?</h2>
+      <p class="sub">İndi proqram nümunə məlumatla işləyir. Canlı eBay qiymətləri/satışları üçün eBay-in pulsuz API-sini qoş:</p>
+      <ol style="padding-left:20px;color:var(--muted);line-height:1.9">
+        <li><b style="color:var(--text)">developer.ebay.com</b> saytında pulsuz developer hesabı yarat.</li>
+        <li>"Application keys" bölməsindən <b style="color:var(--text)">App ID (Client ID)</b> və <b style="color:var(--text)">Cert ID</b> al.</li>
+        <li><b style="color:var(--text)">Browse API</b> (məhsul axtarışı) və <b style="color:var(--text)">Marketplace Insights</b> (satış statistikası) icazələri istə.</li>
+        <li>Bu açarları öz komputerində kiçik bir backend-ə (Node/Python) qoy — API açarı brauzerdə açıq saxlanmamalıdır.</li>
+      </ol>
+      <div class="note" style="margin-top:18px">⚠️ <b>Təhlükəsizlik:</b> API açarını birbaşa bu HTML faylına yazma — hamı görə bilər. Backend (server tərəfi) lazımdır.</div>
+      <div class="note">🛡️ <b>eBay qaydası:</b> dropshipping üçün məhsulu <b>topdan təchizatçıdan</b> götür (SaleHoo, CJ Dropshipping və s.). Amazon/AliExpress-dən pərakəndə alıb satmaq qadağandır.</div>
+    </div>
+  </div>
+</div>
+<script>
+let PRODUCTS = [
+  {name:"Telefon üçün maqnit tutacaq", cat:"Telefon aksesuarları", cost:2.5, sell:11, demand:78, comp:65},
+  {name:"Simsiz qulaqlıq qabı qoruyucu", cat:"Telefon aksesuarları", cost:1.8, sell:9, demand:70, comp:72},
+  {name:"LED gecə lampası (sensorlu)", cat:"Ev", cost:6, sell:21, demand:66, comp:40},
+  {name:"Mətbəx üçün çoxfunksiyalı doğrayıcı", cat:"Mətbəx", cost:9, sell:28, demand:74, comp:55},
+  {name:"Pet (it/pişik) tüktəmizləyən fırça", cat:"Heyvan ləvazimatı", cost:4, sell:17, demand:68, comp:35},
+  {name:"Avtomobil telefon tutacağı", cat:"Avto", cost:3.5, sell:14, demand:80, comp:70},
+  {name:"Qaymayan yoga xalçası", cat:"Fitnes", cost:11, sell:34, demand:58, comp:48},
+  {name:"Rezistans fitnes lentləri (dəst)", cat:"Fitnes", cost:5, sell:19, demand:64, comp:50},
+  {name:"Su keçirməyən bel çantası", cat:"Çanta", cost:13, sell:39, demand:55, comp:45},
+  {name:"Bağ üçün avtomatik suvarma damcıları", cat:"Bağ", cost:7, sell:24, demand:52, comp:30},
+  {name:"Uşaq üçün rəngli çəkmə dəsti", cat:"Uşaq", cost:4.5, sell:16, demand:60, comp:42},
+  {name:"Saç düzləşdirici daraq", cat:"Gözəllik", cost:8, sell:27, demand:72, comp:62},
+  {name:"Üz təmizləyici silikon fırça", cat:"Gözəllik", cost:3, sell:13, demand:67, comp:58},
+  {name:"Mini USB stolüstü ventilyator", cat:"Elektronika", cost:5.5, sell:18, demand:63, comp:55},
+  {name:"Ağıllı su butulkası (xatırladıcı)", cat:"İdman", cost:7.5, sell:25, demand:50, comp:33},
+  {name:"Divar üçün yapışqanlı rəf dəsti", cat:"Ev", cost:6.5, sell:22, demand:57, comp:38},
+  {name:"Avtomobil sürtgəc təmizləyici", cat:"Avto", cost:9, sell:29, demand:54, comp:36},
+  {name:"Termal qəhvə termosu (paslanmaz)", cat:"Mətbəx", cost:10, sell:31, demand:61, comp:52},
+  {name:"Akril dırnaq dizayn dəsti", cat:"Gözəllik", cost:6, sell:23, demand:69, comp:60},
+  {name:"Kiçik dronlar üçün ehtiyat pər", cat:"Hobbi", cost:4, sell:15, demand:45, comp:28},
+  {name:"Boyun masaj cihazı", cat:"Sağlamlıq", cost:14, sell:44, demand:62, comp:47},
+  {name:"Stolüstü kabel təşkilatçısı", cat:"Ofis", cost:2, sell:10, demand:59, comp:44},
+  {name:"Qatlanan səyahət təşkilatçı çantaları", cat:"Səyahət", cost:5, sell:18, demand:53, comp:39},
+  {name:"RGB oyun siçanı altlığı (böyük)", cat:"Geyminq", cost:7, sell:24, demand:71, comp:66},
+  {name:"Bitki üçün ağıllı nəmlik ölçən", cat:"Bağ", cost:4.5, sell:16, demand:48, comp:31}
+];
+const FEES = {fvf:13.25, fixed:0.40, pay:2};
+function analyze(p){
+  const fvfAmt=p.sell*FEES.fvf/100, payAmt=p.sell*FEES.pay/100;
+  const totalCost=p.cost+fvfAmt+FEES.fixed+payAmt;
+  const profit=p.sell-totalCost;
+  const margin=p.sell>0?profit/p.sell*100:0;
+  const roi=p.cost>0?profit/p.cost*100:0;
+  const marginScore=Math.max(0,Math.min(100,margin*2.2));
+  const demandScore=p.demand, compScore=100-p.comp;
+  let score=Math.round(Math.max(0,Math.min(100,marginScore*0.4+demandScore*0.3+compScore*0.3)));
+  let tier="low";
+  if(score>=65&&margin>=15)tier="good"; else if(score>=45)tier="mid";
+  return {...p,profit,margin,roi,score,tier};
+}
+const $=id=>document.getElementById(id);
+const money=n=>(n<0?'-':'')+'$'+Math.abs(n).toFixed(2);
+function tierLabel(t){return t==="good"?"Yaxşı fürsət":t==="mid"?"Orta":"Zəif";}
+function render(){
+  const q=$('f_search').value.trim().toLowerCase(), cat=$('f_cat').value;
+  const minMargin=+$('f_margin').value, maxComp=+$('f_comp').value;
+  const sort=$('f_sort').value, goodOnly=$('f_goodonly').value==="1";
+  let list=PRODUCTS.map(analyze).filter(p=>{
+    if(q&&!(p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q)))return false;
+    if(cat&&p.cat!==cat)return false;
+    if(p.margin<minMargin)return false;
+    if(p.comp>maxComp)return false;
+    if(goodOnly&&p.tier!=="good")return false;
+    return true;
+  });
+  const sorters={score:(a,b)=>b.score-a.score,profit:(a,b)=>b.profit-a.profit,
+    margin:(a,b)=>b.margin-a.margin,demand:(a,b)=>b.demand-a.demand,comp:(a,b)=>a.comp-b.comp};
+  list.sort(sorters[sort]);
+  const goodCount=list.filter(p=>p.tier==="good").length;
+  const avgProfit=list.length?list.reduce((s,p)=>s+p.profit,0)/list.length:0;
+  const avgMargin=list.length?list.reduce((s,p)=>s+p.margin,0)/list.length:0;
+  const best=list.length?list.reduce((a,b)=>b.score>a.score?b:a):null;
+  $('s_count').textContent=list.length;
+  $('s_good').textContent=goodCount;
+  $('s_avgprofit').textContent=money(avgProfit);
+  $('s_avgmargin').textContent=avgMargin.toFixed(0)+'%';
+  $('s_best').textContent=best?best.name.split(' ').slice(0,2).join(' '):'—';
+  $('s_best').style.fontSize='0.95rem';
+  const grid=$('grid'); grid.innerHTML='';
+  $('empty').style.display=list.length?'none':'block';
+  list.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='prod '+p.tier;
+    el.innerHTML=`
+      <div class="scorebadge ${p.tier}">${p.score} bal · ${tierLabel(p.tier)}</div>
+      <h3>${p.name}</h3><div class="cat">📂 ${p.cat}</div>
+      <div class="metrics">
+        <div class="m"><div class="lab">Maya</div><div class="v">${money(p.cost)}</div></div>
+        <div class="m"><div class="lab">Satış</div><div class="v">${money(p.sell)}</div></div>
+        <div class="m"><div class="lab">Xalis mənfəət</div><div class="v ${p.profit>=0?'pos':'neg'}">${money(p.profit)}</div></div>
+        <div class="m"><div class="lab">Marja</div><div class="v ${p.margin>=15?'pos':'neg'}">${p.margin.toFixed(0)}%</div></div>
+      </div>
+      <div class="bars">
+        <div class="bar"><div class="t"><span>Tələbat</span><span>${p.demand}/100</span></div>
+          <div class="track"><div class="fill demand" style="width:${p.demand}%"></div></div></div>
+        <div class="bar"><div class="t"><span>Rəqabət</span><span>${p.comp}/100</span></div>
+          <div class="track"><div class="fill comp" style="width:${p.comp}%"></div></div></div>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+function fillCats(){
+  const cats=[...new Set(PRODUCTS.map(p=>p.cat))].sort();
+  $('f_cat').innerHTML='<option value="">Hamısı</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+}
+['f_search','f_cat','f_sort','f_goodonly'].forEach(id=>$(id).addEventListener('input',render));
+$('f_margin').addEventListener('input',e=>{$('f_margin_v').textContent=e.target.value+'%';render();});
+$('f_comp').addEventListener('input',e=>{$('f_comp_v').textContent=e.target.value;render();});
+$('addBtn').addEventListener('click',()=>{
+  const name=$('a_name').value.trim()||'Adsız məhsul', cat=$('a_cat').value.trim()||'Digər';
+  const cost=+$('a_cost').value||0, sell=+$('a_sell').value||0;
+  const demand=Math.min(100,Math.max(1,+$('a_demand').value||50));
+  const comp=Math.min(100,Math.max(1,+$('a_comp').value||50));
+  PRODUCTS.unshift({name,cat,cost,sell,demand,comp});
+  fillCats(); render(); $('a_name').value='';
+  document.querySelector('.tab[data-tab="finder"]').click();
+});
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active'); $(t.dataset.tab).classList.add('active');
+  });
+});
+function calc(){
+  const sell=+$('c_sell').value||0, cost=+$('c_cost').value||0;
+  const fvf=+$('c_fvf').value||0, fixed=+$('c_fixed').value||0;
+  const pay=+$('c_pay').value||0, ship=+$('c_ship').value||0, ad=+$('c_ad').value||0;
+  const fvfAmt=sell*fvf/100, payAmt=sell*pay/100, adAmt=sell*ad/100;
+  const total=cost+fvfAmt+fixed+payAmt+adAmt+ship;
+  const profit=sell-total, margin=sell>0?profit/sell*100:0, roi=cost>0?profit/cost*100:0;
+  const varRate=(fvf+pay+ad)/100, be=varRate<1?(cost+fixed+ship)/(1-varRate):0;
+  $('rc_fvf').textContent='-'+money(fvfAmt); $('rc_fixed').textContent='-'+money(fixed);
+  $('rc_pay').textContent='-'+money(payAmt); $('rc_ad').textContent='-'+money(adAmt);
+  $('rc_ship').textContent='-'+money(ship); $('rc_cost').textContent='-'+money(cost);
+  $('rc_total').textContent=money(total);
+  $('rc_box').className='big '+(profit>=0?'profit-pos':'profit-neg');
+  $('rc_profit').textContent=money(profit); $('rc_profit').className='num '+(profit>=0?'pos':'neg');
+  $('rc_margin').textContent=margin.toFixed(1)+'%'; $('rc_margin').className='val '+(margin>=0?'pos':'neg');
+  $('rc_roi').textContent=roi.toFixed(1)+'%'; $('rc_roi').className='val '+(roi>=0?'pos':'neg');
+  $('rc_be').textContent=be>0?money(be):'—';
+}
+['c_sell','c_cost','c_fvf','c_fixed','c_pay','c_ship','c_ad'].forEach(id=>$(id).addEventListener('input',calc));
+fillCats(); render(); calc();
+</script>
+</body>
+</html>
